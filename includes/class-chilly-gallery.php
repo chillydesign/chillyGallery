@@ -117,7 +117,7 @@ class Chilly_Gallery {
 		add_action( 'after_setup_theme', array($this, 'add_thumbnail_support_to_theme') );
 
 
-		add_action( 'admin_bar_menu', array($this, 'add_chilly_gallery_to_toolbar'), 999 );
+		#add_action( 'admin_bar_menu', array($this, 'add_chilly_gallery_to_toolbar'), 999 );
 
 
 		add_shortcode( 'chilly-gallery', array($this, 'cgallery_shortcode') );
@@ -201,7 +201,7 @@ class Chilly_Gallery {
 	public function enqueue_scripts () {
 
 	
-    	wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->version, true );
+    	wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 		wp_enqueue_script( $this->_token . '-frontend' );
 				
 
@@ -265,8 +265,8 @@ class Chilly_Gallery {
 
 
 	public function default_gallery_type(){
-		$slider_or_gallery = get_option('wpt_slider_or_lightbox');
-		if ($slider_or_gallery) {
+		$slider_or_gallery = get_option('chilly_slider_or_lightbox');
+		if (isset($slider_or_gallery)) {
 				return $slider_or_gallery;
 		} else {
 			return 'slider';
@@ -274,6 +274,45 @@ class Chilly_Gallery {
 	
 
 	}
+
+
+
+	public function default_show_gallery_title(){
+		$chilly_show_gallery_title = get_option('chilly_show_gallery_title');
+		if (isset($chilly_show_gallery_title)) {
+				return $chilly_show_gallery_title;
+		} else {
+			return 'on';
+		}
+	
+
+	}
+	public function default_thumbnail_width(){
+		$thumbnail_width = get_option('chilly_thumbnail_width');
+		if (isset($thumbnail_width)) {
+			return $thumbnail_width;
+		} else {
+			return 100;
+		}
+	
+
+	}
+	public function default_gallery_delay(){
+		$chilly_slider_delay = get_option('chilly_slider_delay');
+		if (isset($chilly_slider_delay)) {
+				return $chilly_slider_delay;
+		} else {
+			return 2500;
+		}
+	
+
+	}
+
+
+
+
+
+
 
 	public function gallery_type($gallery_id) {
 
@@ -283,7 +322,7 @@ class Chilly_Gallery {
 
 
 	public function slider_delay(){
-		$slider_delay = get_option('wpt_slider_delay');
+		$slider_delay = get_option('chilly_slider_delay');
 		if ($slider_delay) {
 			return $slider_delay;
 		} else {
@@ -350,7 +389,7 @@ class Chilly_Gallery {
 	public function add_gallery_name () {
 		global $post;
 
-		if( $post->post_type == 'cimage'  ) {
+		if( isset($post) &&  $post->post_type == 'cimage'  ) {
 
 
 			$gallery = $this->single_gallery($post->post_parent);
@@ -402,8 +441,8 @@ class Chilly_Gallery {
 
 		public function get_thumbnail_size(){
 
-			if (get_option( 'wpt_thumbnail_width' ) != ''  ) {
-				$size = get_option( 'wpt_thumbnail_width' );
+			if (get_option( 'chilly_thumbnail_width' ) != ''  ) {
+				$size = get_option( 'chilly_thumbnail_width' );
 				$thumbnail_size = array($size, $size);
 			} else {
 				$thumbnail_size = array(100,100);
@@ -419,7 +458,7 @@ class Chilly_Gallery {
 			global $chill_gall;
 
 		// load scripts and style for this
-			wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->version );
+			wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 			wp_enqueue_script( $this->_token . '-bjqs' );
 
 
@@ -438,7 +477,7 @@ class Chilly_Gallery {
 			global $chill_gall;
 
 			// load scripts and style for this
-			wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->version );
+			wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 			wp_enqueue_script( $this->_token . '-unslider' );
 
 
@@ -454,7 +493,7 @@ class Chilly_Gallery {
 		public function show_single_masonry($gallery_id ){
 			global $chill_gall;
 		// load scripts and style for this
-			wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->version );
+			wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 			wp_enqueue_script( $this->_token . '-masonry' );
 
 
@@ -472,14 +511,14 @@ class Chilly_Gallery {
 
 
 
-		public function add_chilly_gallery_to_toolbar( $wp_admin_bar ) {
-			$args = array(
-				'id'    => 'edit_chilly_gallery',
-				'title' => 'Chilly Galleries',
-				'href'  =>  admin_url() . 'admin.php?page=' . $this->_token . "_galleries" 
-			);
-			$wp_admin_bar->add_node( $args );
-		}
+		// public function add_chilly_gallery_to_toolbar( $wp_admin_bar ) {
+		// 	$args = array(
+		// 		'id'    => 'edit_chilly_gallery',
+		// 		'title' => 'Chilly Galleries',
+		// 		'href'  =>  admin_url() . 'admin.php?page=' . $this->_token . "_galleries" 
+		// 	);
+		// 	$wp_admin_bar->add_node( $args );
+		// }
 
 
 
@@ -572,7 +611,7 @@ class Chilly_Gallery {
 	 * @see Chilly_Gallery()
 	 * @return Main Chilly_Gallery instance
 	 */
-	public static function instance ( $file = '', $version = '1.0.0' ) {
+	public static function instance ( $file = '', $version = '0.2.5' ) {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
 		}

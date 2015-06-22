@@ -39,7 +39,7 @@ class Chilly_Gallery_Settings {
 	public function __construct ( $parent ) {
 		$this->parent = $parent;
 
-		$this->base = 'wpt_';
+		$this->base = 'chilly_';
 
 		// Initialise settings
 		add_action( 'init', array( $this, 'init_settings' ), 11 );
@@ -256,7 +256,7 @@ class Chilly_Gallery_Settings {
 				array(
 					'id' 			=> 'list_class',
 					'label'			=> __( 'Class name of list' , 'chilly-gallery' ),
-					'description'	=> __( 'TWhat should the class of the list be', 'chilly-gallery' ),
+					'description'	=> __( 'What should the class of the list be', 'chilly-gallery' ),
 					'type'			=> 'text',
 					'default'		=> '',
 					'placeholder'	=> __( 'class name of list', 'chilly-gallery' )
@@ -264,7 +264,7 @@ class Chilly_Gallery_Settings {
 				array(
 					'id' 			=> 'image_class',
 					'label'			=> __( 'Class name of image' , 'chilly-gallery' ),
-					'description'	=> __( 'TWhat should the class of the image be', 'chilly-gallery' ),
+					'description'	=> __( 'What should the class of the image be', 'chilly-gallery' ),
 					'type'			=> 'text',
 					'default'		=> '',
 					'placeholder'	=> __( 'class name of image', 'chilly-gallery' )

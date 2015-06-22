@@ -40,7 +40,7 @@ class Chilly_Gallery_Galleries {
 	public function __construct ( $parent ) {
 		$this->parent = $parent;
 
-		$this->base = 'wpt_';
+		$this->base = 'chilly_';
 
 
 		

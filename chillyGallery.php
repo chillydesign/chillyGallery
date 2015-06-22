@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: ChillyGallery
- * Version: 0.2.3
+ * Version: 0.2.5
  * Plugin URI: http://www.chillydesign.co/
  * Description: A simple Chilly gallery
  * Author: Chilly
@@ -9,15 +9,19 @@
  * Requires at least: 4.0
  * Tested up to: 4.0
  *
- * Text Domain: wordpress-plugin-template
+ * Text Domain: chilly-gallery-plugin
  * Domain Path: /lang/
  *
  * @package WordPress
- * @author Hugh Lashbrooke
+ * @author Charles Harvey
  * @since 1.0.0
  */
 
+
+
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 
 // Load plugin class files
 require_once( 'includes/class-chilly-gallery.php' );

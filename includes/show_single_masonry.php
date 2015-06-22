@@ -2,12 +2,12 @@
 
 $chill_gall = ''; 
 
-if ($gallery->post_title != ''  && get_option('wpt_show_gallery_title') )   : 
+if ($gallery->post_title != ''  && get_option('chilly_show_gallery_title') )   : 
 	$chill_gall .= '<h2>' .  $gallery->post_title . '</h2>';
  endif; 
 
 	$chill_gall .= '<style type="text/css">
-	body .images_container img { ' . get_option('wpt_image_css') . '}
+	body .images_container img { ' . get_option('chilly_image_css') . '}
 </style>
 <div id="chilly_masonry">';
 

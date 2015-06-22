@@ -2,16 +2,31 @@
 
 
 	if( isset($_POST['gallerySubmit'] )) {
-		$post = array(
-		  'post_title'     => $_POST['galleryName'],
-		  'post_status'    => 'publish',
-		  'post_type'      => 'cgallery'
-		);  
-		$new_gallery = wp_insert_post( $post, $wp_error );
-		$new_galery_type =  add_post_meta($new_gallery, '_gallery_type',  $this->default_gallery_type()  , true);  
 
-		$permalink = "?page=" . $this->_token. "_galleries&amp;id=$new_gallery";
-		$this->redirect($permalink);
+		$galleryName = $_POST['galleryName'];
+
+
+		if ($galleryName != ''){
+
+			$post = array(
+			  'post_title'     => $_POST['galleryName'],
+			  'post_status'    => 'publish',
+			  'post_type'      => 'cgallery'
+			);  
+			$new_gallery = wp_insert_post( $post, $wp_error );
+			// set Defaults if set 
+			$new_galery_type =  add_post_meta($new_gallery, '_gallery_type',  $this->default_gallery_type()  , true);  
+			$new_gallery_title =  add_post_meta($new_gallery, '_gallery_title',  $this->default_show_gallery_title()  , true);  
+			$new_gallery_thumb =  add_post_meta($new_gallery, '_gallery_thumbnail',  $this->default_thumbnail_width()  , true);  
+			$new_gallery_delay =  add_post_meta($new_gallery, '_gallery_delay',  $this->default_gallery_delay()  , true);  
+			// redirect to page
+			$permalink = "?page=" . $this->_token. "_galleries&amp;id=$new_gallery";
+			$this->redirect($permalink);
+		} else {# end of if there is a gallery name
+			$error =  '<div class="error"><p>Warning. No Gallery name</p></div>';
+		}
+
+
 	} # END OF IF SUBMIT FORM
 
 
@@ -51,8 +66,9 @@
 		</table>
 
 
-
+	<?php if (isset($error)) echo $error; ?>
 	<form id="createGallery" method="post" action="" class="feature-filter" style="padding:5px 10px 20px;margin:20px 0">
+
 		<h2>Create a new gallery</h2>
 		<label  for="galleryName">Gallery Name</label>
 		<input type="text" name="galleryName" id="galleryName" size="30" value=""  autocomplete="off" />

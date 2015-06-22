@@ -13,7 +13,7 @@
 
 		// Update the post into the database
 		wp_update_post( $update );
-		update_post_meta($gallery_id, '_gallery_type',  $_POST['wpt_slider_or_lightbox']);  
+		update_post_meta($gallery_id, '_gallery_type',  $_POST['chilly_slider_or_lightbox']);  
 
 
 	}; # END OF UPDATE GALLERY
@@ -88,13 +88,14 @@
 	<table  class="wp-list-table widefat fixed items" cellspacing="0">
 	<thead>
 		<tr>
+			<th style="width:1px"></th>
 			<th style="width:100px">Image</th>
 			<th>Title</th>
 			<th>Author</th>
 			<th>Created</th>
 		</tr>
 	</thead>
-	<tbody id="the-list">
+	<tbody id="the-list" class="sortable" >
 	<?php 
 
 		foreach ($this->all_images($gallery_id) as $image) : ?>
@@ -102,7 +103,8 @@
 			<?php $image_id  =  $image->ID;  ?>
 			<?php $thumb = get_post_meta( $image_id, '_thumbnail_id', true );  ?>
 			<?php $edit_link =  get_edit_post_link($image_id); ?>
-			<tr>
+			<tr class="sortrow" data-row="<?php echo $image_id; ?>" >
+				<td class="dragger"></td>
 				<td>
 					<a href="<?php echo $edit_link  ?>"><?php echo wp_get_attachment_image(  $thumb, [100,100] ); ?></a>
 				</td>
@@ -153,7 +155,7 @@
 		<?php foreach (['slider', 'gallery', 'masonry'] as $type) {
 			$checked = ( $type == $gallery_type  ) ?  ' checked="checked" ' : '';
 			echo '<label for="slider_or_lightbox_' . $type . '">';
-			echo '<input type="radio"  name="wpt_slider_or_lightbox" value="' . $type . '" id="slider_or_lightbox_' . $type . '" ' . $checked . ' />' . ucfirst($type) . '</label> ';
+			echo '<input type="radio"  name="chilly_slider_or_lightbox" value="' . $type . '" id="slider_or_lightbox_' . $type . '" ' . $checked . ' />' . ucfirst($type) . '</label> ';
 		}
 		?>
 
