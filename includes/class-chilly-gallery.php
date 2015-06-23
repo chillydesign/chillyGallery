@@ -211,7 +211,14 @@ class Chilly_Gallery {
 	
     	wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 		wp_enqueue_script( $this->_token . '-frontend' );
-				
+
+
+		wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+		wp_enqueue_script( $this->_token . '-masonry' );
+		wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+		wp_enqueue_script( $this->_token . '-bjqs' );
+	wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+	wp_enqueue_script( $this->_token . '-unslider' );		
 
 
 		
@@ -395,16 +402,14 @@ class Chilly_Gallery {
 	        	if (  $gallery_type == 'masonry') {
 						// SHOW THE MASONRY GALLERY
 						// load scripts and style for this
-						wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-						wp_enqueue_script( $this->_token . '-masonry' );
+
 						include('show_single_masonry.php');
 					
 
 	        	} elseif(  $gallery_type == 'gallery') {
 						// SHOW THE GALLERY
 						// load scripts and style for this
-						wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-						wp_enqueue_script( $this->_token . '-bjqs' );
+
 						include('show_single_gallery.php');
 
 	        	} else { 
@@ -412,8 +417,7 @@ class Chilly_Gallery {
 
 					// SHOW THE SLIDER
 					// load scripts and style for this
-					wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-					wp_enqueue_script( $this->_token . '-unslider' );
+
 					include('show_single_slider.php');
 			
 	        		
