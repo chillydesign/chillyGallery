@@ -97,6 +97,13 @@ class Chilly_Gallery {
 		register_activation_hook( $this->file, array( $this, 'install' ) );
 
 
+
+
+		add_action( 'admin_footer',  array($this, 'my_action2_javascript' ) ); // Write our JS below here
+		add_action( 'wp_ajax_my_action2',  array($this, 'my_action2_callback' ) ); // Write our JS below here
+
+
+
 		// Add submenu page to menu
 		add_action( 'admin_menu' , array( $this, 'add_cgallery_to_menu' ) );
 
@@ -118,6 +125,7 @@ class Chilly_Gallery {
 
 
 		#add_action( 'admin_bar_menu', array($this, 'add_chilly_gallery_to_toolbar'), 999 );
+
 
 
 		add_shortcode( 'chilly-gallery', array($this, 'cgallery_shortcode') );
@@ -315,22 +323,38 @@ class Chilly_Gallery {
 
 
 	public function gallery_type($gallery_id) {
-
 		$gallery_type  =  get_post_meta( $gallery_id,  '_gallery_type', true);
 		return $gallery_type;
 	}
 
-
-	public function slider_delay(){
-		$slider_delay = get_option('chilly_slider_delay');
-		if ($slider_delay) {
-			return $slider_delay;
-		} else {
-			return 2500;
-		}
-	
-
+	public function gallery_title($gallery_id) {
+		$gallery_title  =  get_post_meta( $gallery_id,  '_gallery_title', true);
+		return $gallery_title;
 	}
+
+	public function gallery_thumbnail($gallery_id) {
+		$gallery_thumbnail  =  get_post_meta( $gallery_id,  '_gallery_thumbnail', true);
+		return $gallery_thumbnail;
+	}
+	public function gallery_delay($gallery_id) {
+		$gallery_delay  =  get_post_meta( $gallery_id,  '_gallery_delay', true);
+		return $gallery_delay;
+	}
+	public function gallery_height($gallery_id) {
+		$gallery_height  =  get_post_meta( $gallery_id,  '_gallery_height', true);
+		return $gallery_height;
+	}
+
+
+
+	// public function slider_delay(){
+	// 	$slider_delay = get_option('chilly_slider_delay');
+	// 	if ($slider_delay) {
+	// 		return $slider_delay;
+	// 	} else {
+	// 		return 2500;
+	// 	}
+	// }
 
 
 
@@ -344,29 +368,55 @@ class Chilly_Gallery {
 		    ), $atts );
 
 		    $id = intval($a['id']);
+			$gallery = $this->single_gallery($id);
+			$images = $this->all_images($id);
+			$slider_height = $gallery->post_content;
+			$gallery_type  =  $this->gallery_type($id);
+			$gallery_title  =  $this->gallery_title($id);
+			$gallery_thumbnail  =  $this->gallery_thumbnail($id);
+			$gallery_delay  =  $this->gallery_delay($id);
+
+
+			if ($gallery_type == '' ) $gallery_type = $this->default_gallery_type();
+			global $chill_gall;
+			$chill_gall =  '';
+
+
 			if($id == 0 ){
-	            return 'No gallery selected. Please add an id to shortcode';
+	            $chill_gall =  '<div class="chilly_alert"><p>No gallery selected. Please add an id to shortcode</p></div>';
 	           	
+	        } elseif(  $this->count_pictures($id )  == 0  ) {
+	        	$chill_gall = '<div class="chilly_alert"><p>No images</p></div>';
+
 	        } else {
 
-	        	$gallery_type  =  $this->gallery_type($id);
-	        	if ($gallery_type == '' ) $gallery_type = $this->default_gallery_type();
-	        	
+	        	  
+	        		
 	        	if (  $gallery_type == 'masonry') {
-
 						// SHOW THE MASONRY GALLERY
-					$this->show_single_masonry($id);
+						// load scripts and style for this
+						wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+						wp_enqueue_script( $this->_token . '-masonry' );
+						include('show_single_masonry.php');
+					
 
 	        	} elseif(  $gallery_type == 'gallery') {
+						// SHOW THE GALLERY
+						// load scripts and style for this
+						wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+						wp_enqueue_script( $this->_token . '-bjqs' );
+						include('show_single_gallery.php');
 
-		
-					// SHOW THE GALLERY
-					$this->show_single_gallery($id);
+	        	} else { 
 
-	        	} else { // show as a slider
-	  
+
 					// SHOW THE SLIDER
-	        		 $this->show_single_slider($id);	
+					// load scripts and style for this
+					wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+					wp_enqueue_script( $this->_token . '-unslider' );
+					include('show_single_slider.php');
+			
+	        		
 	        	}
 
 
@@ -376,7 +426,7 @@ class Chilly_Gallery {
 
 		        
 	        }
-	        global $chill_gall;
+	      
 	        return 	 $chill_gall;
 
 
@@ -432,7 +482,8 @@ class Chilly_Gallery {
 				'post_type'        => 'cimage',
 				'post_parent'      => $gallery_id,
 				'post_status'      => 'publish',
-				'posts_per_page' => -1
+				'posts_per_page'   => -1,
+				'orderby'          => 'menu_order'
 			);
 			$images = get_posts( $args );
 			return $images;
@@ -454,57 +505,77 @@ class Chilly_Gallery {
 	
 
 
-		public function show_single_gallery($gallery_id){
-			global $chill_gall;
-
-		// load scripts and style for this
-			wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-			wp_enqueue_script( $this->_token . '-bjqs' );
+	public function my_action2_javascript() { ?>
+		<script type="text/javascript" >
 
 
-			$gallery = $this->single_gallery($gallery_id);
-			$images = $this->all_images($gallery_id);
-			$thumbnail_size = $this->get_thumbnail_size();
+		jQuery(document).ready(function($) {
+
+				 jQuery(".sortable" ).sortable({
+					items: "tr.sortrow",
+					handle: ".dragger",
+					axis: "y",
+					placeholder: "ui-state-highlight",
+					connectWith: ".sortable",
+					update: function(event, ui) {
+						var newOrder = jQuery(this).sortable('toArray' , {attribute: 'data-row' }).toString();
 
 
-			include('show_single_gallery.php');
+						var data = {
+							'chillyOrder': newOrder
+						};
 			
-		}
+						// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+						$.post(ajaxurl, data, function(response) {
+							console.log( data);
+							console.log( response);
+							console.log( ajaxurl);
+						});
+
+					}
+
+			   });
+		});
+		</script> <?php
+	}
 
 
 
-		public function show_single_slider($gallery_id ){
-			global $chill_gall;
-
-			// load scripts and style for this
-			wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-			wp_enqueue_script( $this->_token . '-unslider' );
 
 
-			$gallery = $this->single_gallery($gallery_id);
-			$images = $this->all_images($gallery_id);
-			$slider_height = $gallery->post_content;
+	public function my_action2_callback() {
+
+		echo 'hello';
+
+		global $wpdb; // this is how you get access to the database
 
 
-			include('show_single_slider.php');
+			$order =  explode(',', $_POST['chillyOrder']);
+			$i = 3;
+			foreach ($order as $id) {
+				// wp_update_post( array('ID'  => $id, 'menu_order' =>  $i   ) );
+				 $i++;
+			}
+
+			echo $i;
 			
-		}
-
-		public function show_single_masonry($gallery_id ){
-			global $chill_gall;
-		// load scripts and style for this
-			wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-			wp_enqueue_script( $this->_token . '-masonry' );
 
 
-			$gallery = $this->single_gallery($gallery_id);
-			$images = $this->all_images($gallery_id);
-			$slider_height = $gallery->post_content;
+
+		wp_die(); // this is required to terminate immediately and return a proper response
+
+	}
 
 
-			include('show_single_masonry.php');
-			
-		}
+		// public function show_single_gallery($gallery_id){
+		// 	global $chill_gall;	
+		// }
+		// public function show_single_slider($gallery_id ){
+		// 	global $chill_gall;
+		// }
+		// public function show_single_masonry($gallery_id ){
+		// 	global $chill_gall;
+		// }
 
 
 

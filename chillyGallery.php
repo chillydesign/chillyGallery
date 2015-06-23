@@ -27,10 +27,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 require_once( 'includes/class-chilly-gallery.php' );
 require_once( 'includes/class-chilly-gallery-settings.php' );
 
+
 // Load plugin libraries
 require_once( 'includes/lib/class-chilly-gallery-admin-api.php' );
 require_once( 'includes/lib/class-chilly-gallery-post-type.php' );
 require_once( 'includes/lib/class-chilly-gallery-taxonomy.php' );
+
+
 
 /**
  * Returns the main instance of Chilly_Gallery to prevent the need to use globals.

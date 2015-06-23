@@ -2,11 +2,11 @@
 
 
 
-$chill_gall = ''; 
 
-if ($gallery->post_title != ''  && get_option('chilly_show_gallery_title') )   : 
+
+if ($gallery->post_title != ''   && $gallery_title != 'no'  )   : 
 	$chill_gall .= '<h2>' .  $gallery->post_title . '</h2>';
- endif; 
+endif; 
 
 
 $chill_gall .= '<div class="chilly_banner"><ul >';
@@ -30,7 +30,7 @@ $chill_gall .= '<script>
 
 	var Slideroptions = {
 		speed: 500,               //  The speed to animate each slide (in milliseconds)
-		delay:  ' .  $this->slider_delay() . ' ,              //  The delay between slide animations (in milliseconds)
+		delay:  ' .  $gallery_delay . ' , //  The delay between slide animations (in milliseconds)
 		complete: function() {},  //  A function that gets called after every slide animation
 		keys: true,               //  Enable keyboard (left, right) arrow shortcuts
 		dots: true,               //  Display dot navigation
@@ -38,6 +38,8 @@ $chill_gall .= '<script>
 	}
 
 </script>';
+
+
 
 
 ?>
