@@ -17,7 +17,7 @@
 		if(isset( $_POST['_gallery_title'] )) update_post_meta($gallery_id, '_gallery_title',  $_POST['_gallery_title']);  
 		if(isset( $_POST['_gallery_thumbnail'] )) update_post_meta($gallery_id, '_gallery_thumbnail',  $_POST['_gallery_thumbnail']);  
 		if(isset( $_POST['_gallery_delay'] )) update_post_meta($gallery_id, '_gallery_delay',  $_POST['_gallery_delay']);  
-		if(isset( $_POST['_gallery_height'] )) update_post_meta($gallery_id, '_gallery_height',  $_POST['_gallery_height']);  
+
 	}; # END OF UPDATE GALLERY
 
 
@@ -54,12 +54,13 @@
 
 
 ?>
-<?php   $gallery = $this->single_gallery($gallery_id); ?>
+<?php  $gallery = $this->single_gallery($gallery_id); ?>
 <?php  $gallery_type = $this->gallery_type($gallery_id); ?>
 <?php  $gallery_title = $this->gallery_title($gallery_id); ?>
 <?php  $gallery_thumbnail = $this->gallery_thumbnail($gallery_id); ?>
 <?php  $gallery_delay = $this->gallery_delay($gallery_id); ?>
 <?php  $gallery_height = $this->gallery_height($gallery_id); ?>
+
 
 <div class="wrap" id="<?php echo $this->parent->_token . '_galleries' ?>">
 
@@ -95,7 +96,7 @@
 	<thead>
 		<tr>
 			<th style="width:1px"></th>
-			<th style="width:100px">Image</th>
+			<th style="width:150px">Image</th>
 			<th>Title</th>
 			<th>Author</th>
 			<th>Created</th>
@@ -112,7 +113,7 @@
 			<tr class="sortrow" data-row="<?php echo $image_id; ?>" >
 				<td class="dragger"></td>
 				<td>
-					<a href="<?php echo $edit_link  ?>"><?php echo wp_get_attachment_image(  $thumb, [100,100] ); ?></a>
+					<a href="<?php echo $edit_link  ?>"><?php echo wp_get_attachment_image(  $thumb , 'thumbnail' ); ?></a>
 				</td>
 				<td>
 					<a href="<?php  echo $edit_link  ?>">
@@ -170,30 +171,26 @@
 		<label>Show Gallery Title</label><br/>
 		<?php foreach (['yes', 'no'] as $answer) {
 			$checked = ( $answer == $gallery_title  ) ?  ' checked="checked" ' : '';
+			 if ( $answer ==  'no' &&  $gallery_title == ''  ) $checked =   ' checked="checked" ';
 			echo '<label for="_gallery_title' . $answer . '">';
 			echo '<input type="radio"  name="_gallery_title" value="' . $answer . '" id="_gallery_title' . $answer . '" ' . $checked . ' />' . ucfirst($answer) . '</label> ';
 		}
 		?>
 		</p>
 
-
+		<?php if( $gallery_type == 'gallery' ): ?>
 		<p>
 		<label  for="slider_height">Thumbnail Height (px)</label>
 		<input type="text" name="_gallery_thumbnail" size="30" value="<?php echo $gallery_thumbnail; ?>" id="thumbnail_height" autocomplete="off" /></p>
-
+		<?php endif; ?>
 
 
 
 		<?php if( $gallery_type == 'slider' ): ?>
-		<p>
-		<label  for="_gallery_height">Height of Slider (px)</label>
-		<input type="text" name="_gallery_height" size="30" value="<?php echo $gallery_height; ?>" id="_gallery_height" autocomplete="off" /></p>
 
 		<p>
 		<label  for="_gallery_delay">Slider Delay (ms)</label>
 		<input type="text" name="_gallery_delay" size="30" value="<?php echo $gallery_delay; ?>" id="_gallery_delay" autocomplete="off" /></p>
-
-
 		<?php endif; ?>
 
 

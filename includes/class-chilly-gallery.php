@@ -99,8 +99,9 @@ class Chilly_Gallery {
 
 
 
-		add_action( 'admin_footer',  array($this, 'my_action2_javascript' ) ); // Write our JS below here
-		add_action( 'wp_ajax_my_action2',  array($this, 'my_action2_callback' ) ); // Write our JS below here
+		add_action( 'admin_footer',  array($this, 'my_action_javascript' ) ); // Write our JS below here
+		add_action( 'wp_ajax_my_action_chill',  array($this, 'my_action_chill' ) ); // Write our JS below here
+
 
 
 
@@ -115,6 +116,10 @@ class Chilly_Gallery {
 		// Load frontend JS & CSS
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ), 10 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 10 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_masonry' ), 10 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_fancybox' ), 10 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_unslider' ), 10 );
+
 
 		// Load admin JS & CSS
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
@@ -212,17 +217,89 @@ class Chilly_Gallery {
     	wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 		wp_enqueue_script( $this->_token . '-frontend' );
 
-
-		wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-		wp_enqueue_script( $this->_token . '-masonry' );
-		wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-		wp_enqueue_script( $this->_token . '-bjqs' );
-	wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-	wp_enqueue_script( $this->_token . '-unslider' );		
-
-
-		
 	} // End enqueue_scripts ()
+
+
+
+	public function enqueue_masonry () {
+		wp_register_script( $this->_token . '-masonry', esc_url( $this->assets_url ) . 'js/jquery.masonry' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+		wp_enqueue_script( $this->_token . '-masonry' );
+	}
+
+	public function enqueue_fancybox () {
+		wp_register_script( $this->_token . '-bjqs', esc_url( $this->assets_url ) . 'js/jquery.fancybox' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+		wp_enqueue_script( $this->_token . '-bjqs' );
+	}
+
+	public function enqueue_unslider () {
+		wp_register_script( $this->_token . '-unslider', esc_url( $this->assets_url ) . 'js/unslider' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+		wp_enqueue_script( $this->_token . '-unslider' );		
+	}
+
+
+
+	public function my_action_javascript() { ?>
+		<script type="text/javascript" >
+
+
+		jQuery(document).ready(function($) {
+
+				 jQuery(".sortable" ).sortable({
+					items: "tr.sortrow",
+					handle: ".dragger",
+					axis: "y",
+					placeholder: "ui-state-highlight",
+					connectWith: ".sortable",
+					update: function(event, ui) {
+						var newOrder = jQuery(this).sortable('toArray' , {attribute: 'data-row' }).toString();
+
+
+						var data = {
+							'chillyOrder': newOrder
+						};
+			
+						// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+						$.post(ajaxurl, data, function(response) {
+							console.log( data);
+							console.log( response);
+							console.log( ajaxurl);
+						});
+						
+
+
+					}
+
+			   });
+		});
+		</script> <?php
+	}
+
+
+
+
+
+	public function my_action_chill() {
+
+
+		global $wpdb; // this is how you get access to the database
+
+
+			$order =  explode(',', $_POST['chillyOrder']);
+			$i = 3;
+			foreach ($order as $id) {
+				// wp_update_post( array('ID'  => $id, 'menu_order' =>  $i   ) );
+				 $i++;
+			}
+
+			echo $i;
+			
+
+
+
+		wp_die(); // this is required to terminate immediately and return a proper response
+
+	}
+
 
 	/**
 	 * Load admin CSS.
@@ -280,9 +357,9 @@ class Chilly_Gallery {
 
 
 	public function default_gallery_type(){
-		$slider_or_gallery = get_option('chilly_slider_or_lightbox');
-		if (isset($slider_or_gallery)) {
-				return $slider_or_gallery;
+		$chilly_gallery_type = get_option('chilly_gallery_type');
+		if (isset($chilly_gallery_type)) {
+				return $chilly_gallery_type;
 		} else {
 			return 'slider';
 		}
@@ -293,7 +370,7 @@ class Chilly_Gallery {
 
 
 	public function default_show_gallery_title(){
-		$chilly_show_gallery_title = get_option('chilly_show_gallery_title');
+		$chilly_show_gallery_title = get_option('chilly_gallery_show_gallery_title');
 		if (isset($chilly_show_gallery_title)) {
 				return $chilly_show_gallery_title;
 		} else {
@@ -303,7 +380,7 @@ class Chilly_Gallery {
 
 	}
 	public function default_thumbnail_width(){
-		$thumbnail_width = get_option('chilly_thumbnail_width');
+		$thumbnail_width = get_option('chilly_gallery_thumbnail_width');
 		if (isset($thumbnail_width)) {
 			return $thumbnail_width;
 		} else {
@@ -313,9 +390,9 @@ class Chilly_Gallery {
 
 	}
 	public function default_gallery_delay(){
-		$chilly_slider_delay = get_option('chilly_slider_delay');
+		$chilly_slider_delay = get_option('chilly_gallery_slider_delay');
 		if (isset($chilly_slider_delay)) {
-				return $chilly_slider_delay;
+			return $chilly_slider_delay;
 		} else {
 			return 2500;
 		}
@@ -377,11 +454,11 @@ class Chilly_Gallery {
 		    $id = intval($a['id']);
 			$gallery = $this->single_gallery($id);
 			$images = $this->all_images($id);
-			$slider_height = $gallery->post_content;
 			$gallery_type  =  $this->gallery_type($id);
 			$gallery_title  =  $this->gallery_title($id);
 			$gallery_thumbnail  =  $this->gallery_thumbnail($id);
 			$gallery_delay  =  $this->gallery_delay($id);
+
 
 
 			if ($gallery_type == '' ) $gallery_type = $this->default_gallery_type();
@@ -402,33 +479,26 @@ class Chilly_Gallery {
 	        	if (  $gallery_type == 'masonry') {
 						// SHOW THE MASONRY GALLERY
 						// load scripts and style for this
-
+	        			
 						include('show_single_masonry.php');
 					
 
 	        	} elseif(  $gallery_type == 'gallery') {
 						// SHOW THE GALLERY
 						// load scripts and style for this
-
+	        			
 						include('show_single_gallery.php');
 
 	        	} else { 
-
-
 					// SHOW THE SLIDER
 					// load scripts and style for this
-
+	        		
 					include('show_single_slider.php');
 			
 	        		
 	        	}
 
-
-
-
-
-
-		        
+      
 	        }
 	      
 	        return 	 $chill_gall;
@@ -445,15 +515,9 @@ class Chilly_Gallery {
 
 		if( isset($post) &&  $post->post_type == 'cimage'  ) {
 
-
 			$gallery = $this->single_gallery($post->post_parent);
 			echo '<br/><div class="update-nag">Chilly Gallery: <a href="admin.php?page=' .  $this->_token . '_galleries&amp;id=' .  $gallery->ID . '">Back to ' .  $gallery->post_title  .  '</a></div>';
 		}
-
-
-
-
-
 	}
 
 	
@@ -509,66 +573,6 @@ class Chilly_Gallery {
 	
 
 
-	public function my_action2_javascript() { ?>
-		<script type="text/javascript" >
-
-
-		jQuery(document).ready(function($) {
-
-				 jQuery(".sortable" ).sortable({
-					items: "tr.sortrow",
-					handle: ".dragger",
-					axis: "y",
-					placeholder: "ui-state-highlight",
-					connectWith: ".sortable",
-					update: function(event, ui) {
-						var newOrder = jQuery(this).sortable('toArray' , {attribute: 'data-row' }).toString();
-
-
-						var data = {
-							'chillyOrder': newOrder
-						};
-			
-						// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-						$.post(ajaxurl, data, function(response) {
-							console.log( data);
-							console.log( response);
-							console.log( ajaxurl);
-						});
-
-					}
-
-			   });
-		});
-		</script> <?php
-	}
-
-
-
-
-
-	public function my_action2_callback() {
-
-		echo 'hello';
-
-		global $wpdb; // this is how you get access to the database
-
-
-			$order =  explode(',', $_POST['chillyOrder']);
-			$i = 3;
-			foreach ($order as $id) {
-				// wp_update_post( array('ID'  => $id, 'menu_order' =>  $i   ) );
-				 $i++;
-			}
-
-			echo $i;
-			
-
-
-
-		wp_die(); // this is required to terminate immediately and return a proper response
-
-	}
 
 
 		// public function show_single_gallery($gallery_id){
@@ -718,7 +722,7 @@ class Chilly_Gallery {
 	 * @return  void
 	 */
 	public function install () {
-		$this->_log_version_number();
+		$this->_log_version_number_and_set_defaults();
 	} // End install ()
 
 	/**
@@ -727,8 +731,12 @@ class Chilly_Gallery {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	private function _log_version_number () {
+	private function _log_version_number_and_set_defaults () {
 		update_option( $this->_token . '_version', $this->_version );
+		update_option( $this->_token . '_type', 'slider' );
+		update_option( $this->_token . '_show_gallery_title', '' );
+		update_option( $this->_token . '_thumbnail_width', 150 );
+		update_option( $this->_token . '_slider_delay', 2500 );
 	} // End _log_version_number ()
 
 }

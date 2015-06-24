@@ -9,7 +9,7 @@ if ($gallery->post_title != ''   && $gallery_title != 'no'  )   :
 endif; 
 
 
-$chill_gall .= '<div class="chilly_banner"><ul >';
+$chill_gall .= '<div class="chilly_banner" ><ul >';
 
 	 foreach ($images as $image) : 
 		 $thumb = get_post_meta( $image->ID, '_thumbnail_id', true );  

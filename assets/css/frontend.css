@@ -1,8 +1,10 @@
-body .images_container li {list-style: none;display: inline;margin:0;padding: 0;}
+body .chilly_images_container li {list-style: none;display: inline;margin:0px;padding: 0;}
 
 body .fancybox-overlay {z-index: 100000}
 
-body .image_container  img { margin:0;padding: 0;border-radius: 0;box-shadow: 0 0 0}
+body .chilly_images_container  a { display:inline-block;border:1px solid #aaa;margin:10px;}
+body .chilly_images_container  a:hover { border:1px solid #faa;}
+body .chilly_images_container  img { margin:0;padding: 4px;border-radius: 0;box-shadow: 0 0 0}
 
 
 

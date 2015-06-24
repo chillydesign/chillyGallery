@@ -13,12 +13,12 @@
 			  'post_status'    => 'publish',
 			  'post_type'      => 'cgallery'
 			);  
-			$new_gallery = wp_insert_post( $post, $wp_error );
+			$new_gallery = wp_insert_post( $post );
 			// set Defaults if set 
-			$new_galery_type =  add_post_meta($new_gallery, '_gallery_type',  $this->default_gallery_type()  , true);  
-			$new_gallery_title =  add_post_meta($new_gallery, '_gallery_title',  $this->default_show_gallery_title()  , true);  
-			$new_gallery_thumb =  add_post_meta($new_gallery, '_gallery_thumbnail',  $this->default_thumbnail_width()  , true);  
-			$new_gallery_delay =  add_post_meta($new_gallery, '_gallery_delay',  $this->default_gallery_delay()  , true);  
+			add_post_meta($new_gallery, '_gallery_type',  $this->default_gallery_type()  , true);  
+			add_post_meta($new_gallery, '_gallery_title',  $this->default_show_gallery_title()  , true);  
+			add_post_meta($new_gallery, '_gallery_thumbnail',  $this->default_thumbnail_width()  , true);  
+			add_post_meta($new_gallery, '_gallery_delay',  $this->default_gallery_delay()  , true);  
 			// redirect to page
 			$permalink = "?page=" . $this->_token. "_galleries&amp;id=$new_gallery";
 			$this->redirect($permalink);
@@ -34,7 +34,6 @@
 
 <div class="wrap" id="<?php echo $this->_token . '_galleries' ?>">
 	
-
 
 	<h2>List of Galleries</h2>
 	<table  class="wp-list-table widefat fixed items" cellspacing="0">

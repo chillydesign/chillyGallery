@@ -39,7 +39,7 @@ class Chilly_Gallery_Settings {
 	public function __construct ( $parent ) {
 		$this->parent = $parent;
 
-		$this->base = 'chilly_';
+		$this->base = 'chilly_gallery_';
 
 		// Initialise settings
 		add_action( 'init', array( $this, 'init_settings' ), 11 );
@@ -140,7 +140,7 @@ class Chilly_Gallery_Settings {
 					'default'		=> ''
 				),			
 				array(
-					'id' 			=> 'slider_or_lightbox',
+					'id' 			=> 'type',
 					'label'			=> __( 'Default Gallery Format', 'chilly-gallery' ),
 					'description'	=> __( 'Should it be a slider, lightbox or a masonry gallery.', 'chilly-gallery' ),
 					'type'			=> 'radio',
